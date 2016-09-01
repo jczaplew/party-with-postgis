@@ -28,19 +28,12 @@ import preloader from "spectacle/lib/utils/preloader";
 // Import theme
 import createTheme from "spectacle/lib/themes/default";
 
-// Import custom component
-import Interactive from "../assets/interactive";
-
 // Require CSS
 require("normalize.css");
 require("spectacle/lib/themes/default/index.css");
 
 
 const images = {
-  city: require("../assets/city.jpg"),
-  kat: require("../assets/kat.png"),
-  logo: require("../assets/formidable-logo.svg"),
-  markdown: require("../assets/markdown.png"),
   createExtension: require("../assets/create_extension.png"),
   dataType: require("../assets/data_type.png"),
   functions: require("../assets/functions.png"),
@@ -349,7 +342,8 @@ export default class Presentation extends React.Component {
           </Slide>
           <Slide bgColor="primary">
             <Heading size={1} fit caps>Thanks!</Heading>
-            <Text>@johnjcz</Text>
+            <Text textColor="white">@johnjcz</Text>
+            <Text textColor="white">https://github.com/jczaplew/party-with-postgis</Text>
             <Image src={images.nsf.replace("/", "")} height="150px"/>
             <Image src={images.geobucky.replace("/", "")} height="150px"/>
           </Slide>

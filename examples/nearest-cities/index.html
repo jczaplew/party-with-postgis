@@ -37,7 +37,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.0-rc.3/leaflet.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-hash/0.2.1/leaflet-hash.min.js"></script>
     <script>
-    
+
       var map = L.map('map').setView([0, 0], 3);
       var hash = new L.Hash(map);
       // add tile layer
@@ -45,42 +45,44 @@
         attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="https://carto.com/attributions">CARTO</a>'
       }).addTo(map)
 
+      // map.on('click', function(event) {
+      //   fetch(`/nearby_cities?lat=${event.latlng.lat}&lng=${event.latlng.lng}`)
+      //     .then(function(response) {
+      //       return response.json()
+      //     }).then(function(json) {
+      //      //Clear the info panel
+      //       document.querySelector('#info').textContent = ''
+      //       json.forEach(function(d) {
+      //         document.querySelector('#info').appendChild(document.createElement('p')).textContent = d.name
+      //       })
+      //     })
+      // })
+
+
+      var lines = L.geoJson(null, {
+        color: '#EB7F00',
+        weight: 2
+      }).addTo(map)
+
       map.on('click', function(event) {
-        fetch(`/nearby_cities?lat=${event.latlng.lat}&lng=${event.latlng.lng}`)
+        fetch(`/nearby_cities/lines?lat=${event.latlng.lat}&lng=${event.latlng.lng}`)
           .then(function(response) {
             return response.json()
           }).then(function(json) {
-
-          //Clear the info panel
+            // Clear the layer
+            lines.clearLayers()
+            // Clear the info panel
             document.querySelector('#info').textContent = ''
-            json.forEach(function(d) {
-              document.querySelector('#info').appendChild(document.createElement('p')).textContent = d.name
+            lines.addData(json)
+            json.features.forEach(function(d) {
+              document.querySelector('#info').appendChild(document.createElement('p')).textContent = d.properties.name
             })
           })
       })
 
 
-      // var lines = L.geoJson(null, {
-      //   color: '#EB7F00',
-      //   weight: 2
-      // }).addTo(map)
-      // map.on('click', function(event) {
-      //   fetch(`/nearby_cities/geojson?lat=${event.latlng.lat}&lng=${event.latlng.lng}`)
-      //     .then(function(response) {
-      //       return response.json()
-      //     }).then(function(json) {
-      //       // Clear the layer
-      //       lines.clearLayers()
-      //       // Clear the info panel
-      //       document.querySelector('#info').textContent = ''
-      //       lines.addData(json)
-      //       json.features.forEach(function(d) {
-      //         document.querySelector('#info').appendChild(document.createElement('p')).textContent = d.properties.name
-      //       })
-      //     })
-      // })
 
-      //
+
       // fetch('/populated_places')
       //   .then(function(response) {
       //     return response.json()

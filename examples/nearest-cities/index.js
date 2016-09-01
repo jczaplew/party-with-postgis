@@ -16,6 +16,13 @@ function queryPg(sql, params, callback) {
   })
 }
 
+app.use(function(req, res, next) {
+  res.header('Access-Control-Allow-Origin', '*')
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept')
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, OPTIONS')
+  next()
+})
+
 // When you go to http://localhost:7777 in your browser, just send the HTML file with the map code
 app.get('/', function(req, res, next) {
   res.sendFile(__dirname + '/index.html')
@@ -37,16 +44,17 @@ app.get('/nearby_cities', function(req, res, next) {
   })
 })
 
-app.get('/nearby_cities/geojson', function(req, res, next) {
+app.get('/nearby_cities/lines', function(req, res, next) {
   // TODO: validate query
   // Convert everything to the geography datatype so that spherical coordinates are used
   queryPg(`
-    SELECT name, (ST_DistanceSpheroid(geom, $1, 'SPHEROID["WGS 84",6378137,298.257223563]')*0.001)*0.62 AS distance_km,
+    SELECT name,
     ST_MakeLine(geom, $1) AS geom
     FROM places
     ORDER BY geom <-> $1
     LIMIT 5
   `, [ `SRID=4326;POINT(${parseFloat(req.query.lng)} ${parseFloat(req.query.lat)})`], function(error, result) {
+    console.log(error)
     // TODO: Handle error
     dbgeo.parse(result.rows, {
       outputFormat: 'geojson'
@@ -57,10 +65,12 @@ app.get('/nearby_cities/geojson', function(req, res, next) {
 })
 //
 app.get('/populated_places', function(req, res, next) {
+
   queryPg(`
     SELECT name, geom
     FROM places
-  `, [], function(error, result) {
+    WHERE adm0name = $1
+  `, [req.query.country], function(error, result) {
     dbgeo.parse(result.rows, {
       outputFormat: 'geojson'
     }, function(error, geojson) {
